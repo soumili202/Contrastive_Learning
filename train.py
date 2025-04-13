@@ -6,8 +6,13 @@ from loss import nt_xent_loss
 from config import config
 
 def train():
-    # Force CPU
-    device = torch.device('cpu')
+    # Check for mac gpu
+    if torch.backends.mps.is_available():
+        device = torch.device("mps")
+    elif torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        device = torch.device("cpu")
     print(f"Training on {device}")
 
     model = SimCLRModel(config["model_name"], config["projection_dim"]).to(device)
@@ -33,3 +38,6 @@ def train():
         print(f"Epoch {epoch+1}/{config['epochs']}, Avg Loss: {avg_loss:.4f}")
 
         torch.save(model.state_dict(), f"simclr_epoch{epoch+1}.pth")
+
+if __name__ == "__main__":
+    train()

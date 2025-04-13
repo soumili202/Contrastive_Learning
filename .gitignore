@@ -1,3 +1,5 @@
 
 simclr-env/
 __pycache__/
+data/
+*.pth

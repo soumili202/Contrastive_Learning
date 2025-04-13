@@ -2,6 +2,7 @@ import torchvision.transforms as T
 from torchvision.datasets import STL10
 from torch.utils.data import DataLoader, Subset
 from PIL import Image
+import numpy as np
 
 class SimCLRDataset(STL10):
     def __init__(self, split, transform=None):
@@ -9,7 +10,10 @@ class SimCLRDataset(STL10):
         self.transform = transform
 
     def __getitem__(self, index):
-        img, _ = self.data[index], self.labels[index]
+        img: np.ndarray = self.data[index]
+        # STL-10 returns img of shape (3, 96, 96)
+        # Convert to (96, 96, 3) for PIL
+        img = np.transpose(img, (1, 2, 0))
         img = Image.fromarray(img)
         return self.transform(img), self.transform(img)
 
