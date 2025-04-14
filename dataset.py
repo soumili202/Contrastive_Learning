@@ -32,7 +32,7 @@ def get_dataloaders(config):
 
     # STL-10 split = 'unlabeled' for contrastive training
     dataset = SimCLRDataset(split='unlabeled', transform=augment)
-    dataset = Subset(dataset, range(5000))  # Use only first 5k images for CPU training
+    # dataset = Subset(dataset, range(5000))
 
     dataloader = DataLoader(dataset, batch_size=config["batch_size"],
                             shuffle=True, num_workers=0)
