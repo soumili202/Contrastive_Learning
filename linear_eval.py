@@ -36,7 +36,7 @@ def main():
     print(f"Running linear evaluation on: {device}")
 
     model = SimCLRModel(config["model_name"], config["projection_dim"])
-    model.load_state_dict(torch.load("simclr_epoch7.pth", map_location=device))
+    model.load_state_dict(torch.load("simclr_epoch69.pth", map_location=device))
     model.to(device)
 
     # Get training data (supervised labels)
