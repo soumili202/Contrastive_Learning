@@ -3,3 +3,4 @@ simclr-env/
 __pycache__/
 data/
 *.pth
+.DS_Store

@@ -7,6 +7,8 @@ from config import config
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import numpy as np
+from pathlib import Path
+MODEL_SAVE_PATH = Path("simclr_model")
 
 def get_device():
     return torch.device("mps" if torch.backends.mps.is_available() else "cpu")
@@ -36,7 +38,7 @@ def main():
     print(f"Running linear evaluation on: {device}")
 
     model = SimCLRModel(config["model_name"], config["projection_dim"])
-    model.load_state_dict(torch.load("simclr_epoch69.pth", map_location=device))
+    model.load_state_dict(torch.load(MODEL_SAVE_PATH / "simclr_epoch100.pth", map_location=device))
     model.to(device)
 
     # Get training data (supervised labels)

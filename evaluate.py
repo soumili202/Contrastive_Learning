@@ -7,6 +7,9 @@ from sklearn.manifold import TSNE
 import numpy as np
 from model import SimCLRModel
 from config import config
+from pathlib import Path
+MODEL_SAVE_PATH = Path("simclr_model")
+
 
 def get_device():
     if torch.backends.mps.is_available():
@@ -57,7 +60,7 @@ def main():
     print(f"Evaluating on device: {device}")
 
     model = SimCLRModel(config["model_name"], config["projection_dim"])
-    model.load_state_dict(torch.load("simclr_epoch69.pth", map_location=device))
+    model.load_state_dict(torch.load(MODEL_SAVE_PATH / "simclr_epoch100.pth", map_location=device))
     model.to(device)
 
     dataloader = get_eval_dataloader()
