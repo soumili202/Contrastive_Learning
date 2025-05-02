@@ -8,7 +8,7 @@ import numpy as np
 from model import SimCLRModel
 from config import config
 from pathlib import Path
-MODEL_SAVE_PATH = Path("simclr_model")
+MODEL_SAVE_PATH = Path("simclr_model copy")
 
 
 def get_device():
@@ -24,7 +24,7 @@ def get_eval_dataloader():
     ])
 
     eval_set = STL10(root="./data", split="train", transform=transform, download=True)
-    eval_subset = Subset(eval_set, range(1000))  # use 1k samples for speed
+    eval_subset = eval_set
     return DataLoader(eval_subset, batch_size=64, shuffle=False, num_workers=0)
 
 def extract_embeddings(model, dataloader, device):
@@ -45,10 +45,15 @@ def plot_tsne(embeddings, labels, save_path="tsne_plot.png", show_plot=False):
     tsne = TSNE(n_components=2, random_state=42)
     reduced = tsne.fit_transform(embeddings)
 
-    plt.figure(figsize=(10, 8))
-    scatter = plt.scatter(reduced[:, 0], reduced[:, 1], c=labels, cmap='tab10', s=10)
-    plt.legend(*scatter.legend_elements(), title="Classes", loc="best")
-    plt.title("t-SNE of SimCLR Learned Embeddings")
+    plt.figure(figsize=(10*2,8*2))
+    scatter = plt.scatter(reduced[:, 0], reduced[:, 1], c=labels, cmap='tab10', s=25)
+    plt.legend(*scatter.legend_elements(), title="Classes", loc="best", fontsize=25, title_fontsize=30)
+    plt.title("t-SNE of SimCLR Learned Embeddings", fontdict={"fontsize": 40})
+    plt.xlabel("t-SNE Component 1", fontsize=30)
+    plt.ylabel("t-SNE Component 2", fontsize=30)
+    plt.xticks(fontsize=25)
+    plt.yticks(fontsize=25)
+    plt.tight_layout()
     plt.savefig(save_path)
     if show_plot:
         plt.show()
@@ -60,7 +65,7 @@ def main():
     print(f"Evaluating on device: {device}")
 
     model = SimCLRModel(config["model_name"], config["projection_dim"])
-    model.load_state_dict(torch.load(MODEL_SAVE_PATH / "simclr_epoch100.pth", map_location=device))
+    model.load_state_dict(torch.load(MODEL_SAVE_PATH / "simclr_epoch50.pth", map_location=device))
     model.to(device)
 
     dataloader = get_eval_dataloader()

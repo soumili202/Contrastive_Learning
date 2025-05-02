@@ -16,7 +16,7 @@ def get_eval_dataloader():
         T.ToTensor()
     ])
     dataset = STL10(root="./data", split="train", transform=transform, download=True)
-    subset = Subset(dataset, range(1000))  # use only 1000 images for quick plot
+    subset = dataset
     return DataLoader(subset, batch_size=64, shuffle=False, num_workers=0)
 
 def extract_embeddings(model, dataloader, device):
@@ -31,22 +31,39 @@ def extract_embeddings(model, dataloader, device):
             labels.append(y)
     return torch.cat(embeddings).numpy(), torch.cat(labels).numpy()
 
+"""
+    plt.figure(figsize=(10*2,8*2))
+    scatter = plt.scatter(reduced[:, 0], reduced[:, 1], c=labels, cmap='tab10', s=25)
+    plt.legend(*scatter.legend_elements(), title="Classes", loc="best", fontsize=25, title_fontsize=30)
+    plt.colorbar(scatter, label="Classes", fontsize=25)
+    plt.title("t-SNE of SimCLR Learned Embeddings", fontdict={"fontsize": 40})
+    plt.xlabel("t-SNE Component 1", fontsize=30)
+    plt.ylabel("t-SNE Component 2", fontsize=30)
+    plt.xticks(fontsize=25)
+    plt.yticks(fontsize=25)
+    
+"""
+
 def plot_tsne(embeddings, labels, save_path="tsne_moco.png"):
     tsne = TSNE(n_components=2, random_state=42)
     reduced = tsne.fit_transform(embeddings)
-    plt.figure(figsize=(10,8))
-    scatter = plt.scatter(reduced[:,0], reduced[:,1], c=labels, cmap='tab10', s=10)
-    plt.legend(*scatter.legend_elements(), title="Classes")
-    plt.title("t-SNE of MoCo Learned Embeddings")
+    plt.figure(figsize=(10*2,8*2))
+    scatter = plt.scatter(reduced[:,0], reduced[:,1], c=labels, cmap='tab10', s=25)
+    plt.legend(*scatter.legend_elements(), title="Classes", loc="best", fontsize=25, title_fontsize=30)
+    plt.title("t-SNE of MoCo Learned Embeddings", fontdict={"fontsize": 40})
+    plt.xlabel("t-SNE Component 1", fontsize=30)
+    plt.ylabel("t-SNE Component 2", fontsize=30)
+    plt.xticks(fontsize=25)
+    plt.yticks(fontsize=25)
+    plt.tight_layout()
     plt.savefig(save_path)
-    plt.show()
 
 def main():
     device = get_device()
     print(f"Evaluating MoCo on {device}")
 
     model = MoCoModel(base_encoder=config["model_name"], projection_dim=config["projection_dim"])
-    model.load_state_dict(torch.load("moco_model/moco_epoch10.pth", map_location=device))
+    model.load_state_dict(torch.load("moco_model/moco_epoch50.pth", map_location=device))
     model.to(device)
 
     dataloader = get_eval_dataloader()
